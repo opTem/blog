@@ -1,0 +1,15 @@
+{% include "./layout.html" %}
+
+{% block body %}
+    <h3>Авторизация</h3>
+    {% if error %}
+        <div class="alert alert-danger mb-0 mt-3" role="alert">
+            Ошибка авторизации
+        </div>
+    {% endif %}
+    <form action="/auth/" method="post">
+        {% csrf_token %}
+        {{ auth_form }}
+        <input type="submit" value="Login">
+    </form>
+{% endblock %}

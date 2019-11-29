@@ -1,0 +1,81 @@
+{% include "./layout.html" %}
+
+{% block body %}
+    <div style="width: 100%;">
+        <h3 style="text-align: center">
+            {{ publication.name }}
+            {% if publication.subscribed %}
+                <form style="display: inline" action="/subscribe/" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="username" value="{{ publication.blogger }}">
+                    <input type="submit" name="action" value="Отписаться" class="btn btn-warning card-link">
+                </form>
+            {% else %}
+                <form style="display: inline" action="/subscribe/" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="username" value="{{ publication.blogger }}">
+                    <input type="submit" name="action" value="Подписаться" class="btn btn-primary card-link">
+                </form>
+            {% endif %}
+        </h3>
+    </div>
+    <div class="publication container">
+        <div class="card" style="width: 100%; margin: 16px 0">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted" style="font-size: 11px">
+                    Автор: {{ publication.blogger }}
+                    <br>
+                    Опубликована: {{ publication.created }}
+                    <br>
+                    Рейтинг: {{ publication.rating }}
+                    <br>
+                </h6>
+                <p class="card-text" style="font-style: italic">
+                    {{ publication.short_text }}
+                </p>
+                <p class="card-text">
+                    {{ publication.text }}
+                </p>
+
+                <div style="display: flex; justify-content: flex-end; align-items: center">
+                    <div style="display: inline">
+                        <form action="/rating/" style="display: inline; padding: 0;" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="publication_id" value="{{ publication.id }}">
+
+                            <input type="submit" name="submit" value="Дизлайк" class="btn {% if publication.user_rating is not None and not publication.user_rating.is_plus %}btn-danger{% else %}btn-outline-danger{% endif %} ">
+                            <input type="submit" name="submit" value="Лайк" class="btn {% if publication.user_rating is not None and publication.user_rating.is_plus %}btn-success{% else %}btn-outline-success{% endif %}">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if comments_len > 0 %}
+        <div class="card comments">
+            <h3 class="card-title text-center">Комментарии</h3>
+            <div class="card-body">
+                {% for comment in comments %}
+                    <div class="comment">
+                        <div>
+                            {{ comment.created }} от <b>{{ comment.commentator }}</b>:
+                            {{ comment.text }}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="card comments mt-3">
+            <h3 class="card-title text-center">Прокомментировать</h3>
+            <div class="card-body">
+                <form action="/comment/{{ publication.id }}/" method="post">
+                    {% csrf_token %}
+                    {{ comment_form }}
+                    <input type="submit" class="btn btn-block btn-primary mt-3" value="Прокомментировать">
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

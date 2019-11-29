@@ -1,0 +1,55 @@
+{% include "./layout.html" %}
+
+{% block body %}
+    <div style="width: 100%">
+        {% if view_name == 'all_pubs' %}
+            <h3 style="text-align: center">Все публикации</h3>
+        {% else %}
+            <h3 style="text-align: center">Моя лента</h3>
+        {% endif %}
+    </div>
+    <div class="publications container">
+        <div class="row">
+            {% for publication in publications %}
+                <div class="col-md-6">
+                    <div class="card" style="width: 100%; margin: 16px 0">
+                        <div class="card-body">
+                            <h5 class="card-title d-flex">
+                                {{ publication.name }}
+                                <span style="margin-left: auto; display: inline-block">
+                                    {{ publication.rating }}
+                                </span>
+                            </h5>
+                            <h6 class="card-subtitle mb-2 text-muted" style="font-size: 11px">
+                                Автор: {{ publication.blogger }}<br>
+                                Создан: {{ publication.created }}
+                            </h6>
+                            <p class="card-text">
+                                {{ publication.short_text }}
+                            </p>
+
+                            <div style="display: flex; justify-content: center; align-items: center">
+                                {% if publication.subscribed %}
+                                    <form style="display: inline" action="/subscribe/" method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="username" value="{{ publication.blogger }}">
+                                        <input type="submit" name="action" value="Отписаться" class="btn btn-warning card-link">
+                                    </form>
+                                {% else %}
+                                    <form style="display: inline" action="/subscribe/" method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="username" value="{{ publication.blogger }}">
+                                        <input type="submit" name="action" value="Подписаться" class="btn btn-primary card-link">
+                                    </form>
+                                {% endif %}
+                                <div style="display: inline">
+                                    <a href="/publication/{{ publication.id }}/" class="btn btn-primary">Прочитать</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
